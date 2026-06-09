@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="chat-container">
+
+    <div class="chat-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🧠</div>
+            <span>MindEase</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/chat" class="nav-item">💬 Chat</a>
+            <a href="/dashboard" class="nav-item active">📊 Dashboard</a>
+        </nav>
+        <div class="sidebar-footer">
+            <span>{{ username }}</span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="dashboard-main">
+        <div class="dashboard-header">
+            <h2>Your Mood Dashboard</h2>
+            <p>Track your emotional wellbeing over time</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p class="stat-number">{{ total_sessions }}</p>
+                <p class="stat-label">Total Sessions</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-number positive">{{ positive_pct }}%</p>
+                <p class="stat-label">Positive Mood</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-number warning">{{ sentiment_counts.get('Anxious', 0) }}</p>
+                <p class="stat-label">Anxious Sessions</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-number danger">{{ sentiment_counts.get('Sad', 0) }}</p>
+                <p class="stat-label">Sad Sessions</p>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <h3>Mood This Week</h3>
+            <canvas id="moodChart" height="100"></canvas>
+        </div>
+
+        <div class="history-card">
+            <h3>Recent Mood History</h3>
+            {% if chats %}
+            <div class="history-list">
+                {% for chat in chats|reverse %}
+                <div class="history-item">
+                    <div class="history-message">{{ chat.message[:60] }}{% if chat.message|length > 60 %}...{% endif %}</div>
+                    <div class="history-meta">
+                        <span class="mood-tag {{ chat.sentiment.lower() }}">{{ chat.sentiment }}</span>
+                        <span class="history-time">{{ chat.timestamp.strftime('%b %d, %I:%M %p') }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">No chat history yet. Start chatting to track your mood.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const moodData = {{ avg_mood | tojson }};
+    const labels = Object.keys(moodData);
+    const values = Object.values(moodData);
+
+    const ctx = document.getElementById('moodChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.length > 0 ? labels : ['No data'],
+            datasets: [{
+                label: 'Mood Score',
+                data: values.length > 0 ? values : [0],
+                borderColor: '#7c6af7',
+                backgroundColor: 'rgba(124, 106, 247, 0.08)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#7c6af7',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    min: -1,
+                    max: 1,
+                    ticks: { font: { size: 11 } },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: {
+                    ticks: { font: { size: 11 } },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

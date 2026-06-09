@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="chat-container">
+
+    <div class="chat-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🧠</div>
+            <span>MindEase</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/chat" class="nav-item active">💬 Chat</a>
+            <a href="/dashboard" class="nav-item">📊 Dashboard</a>
+        </nav>
+        <div class="sidebar-footer">
+            <span>{{ username }}</span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="chat-main">
+        <div class="chat-header">
+            <div class="bot-info">
+                <div class="bot-avatar">🧠</div>
+                <div>
+                    <p class="bot-name">MindEase Bot</p>
+                    <p class="bot-status">Online</p>
+                </div>
+            </div>
+            <div id="current-mood" class="mood-pill">Neutral</div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+                <div class="message-bubble">
+                    Hello {{ username }}! I am MindEase, your mental wellness companion. How are you feeling today? 😊
+                </div>
+            </div>
+
+            {% for chat in chats %}
+            <div class="message user-message">
+                <div class="message-bubble">{{ chat.message }}</div>
+                <div class="mood-tag {{ chat.sentiment.lower() }}">{{ chat.sentiment }}</div>
+            </div>
+            <div class="message bot-message">
+                <div class="message-bubble">{{ chat.response }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Type how you are feeling..." />
+            <button onclick="sendMessage()" class="send-btn">Send →</button>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

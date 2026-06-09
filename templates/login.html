@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🧠</div>
+            <h1>MindEase</h1>
+            <p>Your mental wellness companion</p>
+        </div>
+
+        {% if error %}
+        <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="you@email.com" required />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="••••••••" required />
+            </div>
+            <button type="submit" class="btn-primary">Sign in</button>
+        </form>
+
+        <p class="auth-switch">Don't have an account? <a href="/signup">Sign up</a></p>
+    </div>
+</div>
+{% endblock %}
