@@ -165,8 +165,3 @@ If a user sends a message containing crisis keywords, the system:
 - Improve sentiment detection using fine-tuned ML model
 - Add weekly and monthly mood report generation
 
----
-
-## ⚠️ Disclaimer
-
-MindEase is built for **educational purposes only** as a Final Year Project. It is not a substitute for professional mental health care. If you are experiencing a mental health crisis please contact a qualified professional or call a helpline immediately.
