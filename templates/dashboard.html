@@ -8,62 +8,137 @@
             <div class="sidebar-logo">🧠</div>
             <span>MindEase</span>
         </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">{{ username[0].upper() }}</div>
+            <div class="user-info">
+                <p class="user-name">{{ username }}</p>
+                <p class="user-status">● Active</p>
+            </div>
+        </div>
+
         <nav class="sidebar-nav">
-            <a href="/chat" class="nav-item">💬 Chat</a>
-            <a href="/dashboard" class="nav-item active">📊 Dashboard</a>
+            <a href="/chat" class="nav-item">
+                <span class="nav-icon">💬</span>
+                <span>Chat</span>
+            </a>
+            <a href="/dashboard" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
         </nav>
-        <div class="sidebar-footer">
-            <span>{{ username }}</span>
-            <a href="/logout" class="logout-btn">Logout</a>
+
+        <div class="sidebar-bottom">
+            <div class="mood-summary">
+                <p class="mood-summary-title">Today's Mood</p>
+                <p class="mood-summary-value">{{ chats[-1].sentiment if chats else 'No data' }}</p>
+            </div>
+            <a href="/logout" class="logout-btn">
+                <span>⬡</span> Logout
+            </a>
         </div>
     </div>
 
     <div class="dashboard-main">
         <div class="dashboard-header">
-            <h2>Your Mood Dashboard</h2>
-            <p>Track your emotional wellbeing over time</p>
+            <div>
+                <h2>Mood Dashboard</h2>
+                <p>Track your emotional wellbeing over time</p>
+            </div>
+            <div class="header-date">{{ chats[-1].timestamp.strftime('%B %d, %Y') if chats else '' }}</div>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
+                <div class="stat-icon">💬</div>
                 <p class="stat-number">{{ total_sessions }}</p>
                 <p class="stat-label">Total Sessions</p>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="width: 100%; background: var(--accent);"></div>
+                </div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">😊</div>
                 <p class="stat-number positive">{{ positive_pct }}%</p>
                 <p class="stat-label">Positive Mood</p>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="width: {{ positive_pct }}%; background: var(--real);"></div>
+                </div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">😰</div>
                 <p class="stat-number warning">{{ sentiment_counts.get('Anxious', 0) }}</p>
                 <p class="stat-label">Anxious Sessions</p>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="width: {{ (sentiment_counts.get('Anxious', 0) / total_sessions * 100) if total_sessions > 0 else 0 }}%; background: var(--warning);"></div>
+                </div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">😢</div>
                 <p class="stat-number danger">{{ sentiment_counts.get('Sad', 0) }}</p>
                 <p class="stat-label">Sad Sessions</p>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="width: {{ (sentiment_counts.get('Sad', 0) / total_sessions * 100) if total_sessions > 0 else 0 }}%; background: var(--fake);"></div>
+                </div>
             </div>
         </div>
 
-        <div class="chart-card">
-            <h3>Mood This Week</h3>
-            <canvas id="moodChart" height="100"></canvas>
+        <div class="dashboard-grid">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3>Mood Timeline</h3>
+                    <span class="card-badge">This Week</span>
+                </div>
+                <canvas id="moodChart" height="120"></canvas>
+            </div>
+
+            <div class="mood-breakdown-card">
+                <div class="card-header">
+                    <h3>Mood Breakdown</h3>
+                    <span class="card-badge">All Time</span>
+                </div>
+                <div class="breakdown-list">
+                    {% for mood, count in sentiment_counts.items() %}
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">
+                            <span class="mood-tag {{ mood.lower() }}">{{ mood }}</span>
+                            <span class="breakdown-count">{{ count }} sessions</span>
+                        </div>
+                        <div class="breakdown-bar-track">
+                            <div class="breakdown-bar-fill {{ mood.lower() }}"
+                                 style="width: {{ (count / total_sessions * 100) if total_sessions > 0 else 0 }}%;">
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
         <div class="history-card">
-            <h3>Recent Mood History</h3>
+            <div class="card-header">
+                <h3>Recent Conversations</h3>
+                <a href="/chat" class="card-link">View all →</a>
+            </div>
             {% if chats %}
             <div class="history-list">
                 {% for chat in chats|reverse %}
                 <div class="history-item">
-                    <div class="history-message">{{ chat.message[:60] }}{% if chat.message|length > 60 %}...{% endif %}</div>
-                    <div class="history-meta">
-                        <span class="mood-tag {{ chat.sentiment.lower() }}">{{ chat.sentiment }}</span>
-                        <span class="history-time">{{ chat.timestamp.strftime('%b %d, %I:%M %p') }}</span>
+                    <div class="history-avatar">{{ username[0].upper() }}</div>
+                    <div class="history-content">
+                        <p class="history-message">{{ chat.message[:80] }}{% if chat.message|length > 80 %}...{% endif %}</p>
+                        <p class="history-time">{{ chat.timestamp.strftime('%b %d, %I:%M %p') }}</p>
                     </div>
+                    <span class="mood-tag {{ chat.sentiment.lower() }}">{{ chat.sentiment }}</span>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <p class="no-data">No chat history yet. Start chatting to track your mood.</p>
+            <div class="no-data">
+                <p>💬</p>
+                <p>No chat history yet. Start chatting to track your mood.</p>
+                <a href="/chat" class="btn-primary" style="display:inline-block; margin-top:1rem; text-decoration:none; padding: 0.7rem 1.5rem;">Start Chatting</a>
+            </div>
             {% endif %}
         </div>
     </div>
@@ -89,7 +164,9 @@
                 tension: 0.4,
                 fill: true,
                 pointBackgroundColor: '#7c6af7',
-                pointRadius: 5
+                pointBorderColor: '#13131a',
+                pointBorderWidth: 2,
+                pointRadius: 6
             }]
         },
         options: {
@@ -99,11 +176,11 @@
                 y: {
                     min: -1,
                     max: 1,
-                    ticks: { font: { size: 11 } },
-                    grid: { color: 'rgba(0,0,0,0.05)' }
+                    ticks: { font: { size: 11 }, color: '#a0a0b8' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
                 },
                 x: {
-                    ticks: { font: { size: 11 } },
+                    ticks: { font: { size: 11 }, color: '#a0a0b8' },
                     grid: { display: false }
                 }
             }

@@ -4,19 +4,36 @@
 <div class="chat-container">
 
     <div class="chat-sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">🧠</div>
-            <span>MindEase</span>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="/chat" class="nav-item active">💬 Chat</a>
-            <a href="/dashboard" class="nav-item">📊 Dashboard</a>
-        </nav>
-        <div class="sidebar-footer">
-            <span>{{ username }}</span>
-            <a href="/logout" class="logout-btn">Logout</a>
+    <div class="sidebar-header">
+        <div class="sidebar-logo">🧠</div>
+        <span>MindEase</span>
+    </div>
+
+    <div class="sidebar-user">
+        <div class="user-avatar">{{ username[0].upper() }}</div>
+        <div class="user-info">
+            <p class="user-name">{{ username }}</p>
+            <p class="user-status">● Active</p>
         </div>
     </div>
+
+    <nav class="sidebar-nav">
+        <a href="/chat" class="nav-item active">
+            <span class="nav-icon">💬</span>
+            <span>Chat</span>
+        </a>
+        <a href="/dashboard" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <a href="/logout" class="logout-btn">
+            <span>⬡</span> Logout
+        </a>
+    </div>
+</div>
 
     <div class="chat-main">
         <div class="chat-header">
